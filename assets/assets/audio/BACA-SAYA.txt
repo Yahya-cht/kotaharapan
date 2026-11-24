@@ -1,0 +1,4 @@
+Taruh file .mp3 di folder ini untuk mengganti suara bawaan:
+bgm_siang.mp3, bgm_malam.mp3, klik.mp3, bangun.mp3, selesai.mp3, koin.mp3,
+panen.mp3, tebang.mp3, naik_level.mp3, misi.mp3, error.mp3
+File yang tidak ada otomatis memakai suara bawaan game.
