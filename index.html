@@ -59,8 +59,7 @@ button:focus-visible{outline:3px solid var(--kunyit);outline-offset:2px}
 .day{border-radius:12px;background:var(--paper2);padding:10px 4px;text-align:center;font-weight:700;font-size:13px;line-height:1.2}
 .day svg{width:26px;height:26px;fill:#f28c1e;stroke:#f28c1e;display:block;margin:4px auto}
 .day.on{background:#f28c1e;color:#fff}.day.on svg{fill:#fff;stroke:#fff}.day.done{opacity:.5}
-.fbbox{background:#eef8ee;border:1.5px solid #bfe3c3;border-radius:12px;padding:9px 11px;display:grid;gap:7px;font-size:13.5px;margin-bottom:6px}.fbbox small{color:var(--ink2);font-size:12px;line-height:1.3}.onl{color:#1f9d3a;font-weight:800}.fbbox .code{font-size:15px;letter-spacing:.06em}.addf{display:flex;gap:6px}.addf input{flex:1;min-width:0;padding:8px 10px;border:1.5px solid var(--line);border-radius:10px;font:inherit;text-transform:uppercase;background:#fff}
-#visitAct{display:flex;gap:6px;align-items:center;flex-wrap:wrap;margin-top:5px}#visitAct.hide{display:none}#visitH{font-size:12px;font-weight:700;color:#1f7a34}
+.olbox{background:#f3f7ff;border:1px solid #cfe0ff;border-radius:12px;padding:10px 12px;margin-bottom:6px}.olb{font-size:12px;font-weight:800;color:#8a8f98}.olb.on{color:#1f9d4c}.code{font-family:ui-monospace,monospace;font-weight:800;font-size:16px;background:#fff;border:1px dashed #8aa;border-radius:8px;padding:3px 8px;letter-spacing:.06em}#frcode{flex:1;min-width:0;padding:8px 10px;border:1px solid #ccd;border-radius:10px;font:inherit;text-transform:uppercase}#visitActs.hide{display:none!important}
 .fr{display:flex;gap:10px;align-items:center;padding:9px 0;border-bottom:1px dashed var(--line)}
 .fr .av{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;font-weight:800;color:#fff;flex:none}
 .fr .t{flex:1}.fr .t b{display:block;font-size:15px;line-height:1.2}.fr .t small{font-size:12.5px;color:var(--ink2)}
@@ -224,7 +223,7 @@ textarea{height:80px;font-size:12px;font-family:ui-monospace,monospace;resize:ve
   <button data-cv="3" title="Lihat dari kiri" aria-label="Lihat dari kiri"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6 6 6"/></svg></button><button class="mid" data-cv="r" title="Putar 90°" aria-label="Putar kamera 90 derajat"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 12a8 8 0 1 1-2.6-5.9M20 4v5h-5"/></svg></button><button data-cv="1" title="Lihat dari kanan" aria-label="Lihat dari kanan"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6-6 6"/></svg></button>
   <span></span><button data-cv="0" title="Lihat dari bawah (awal)" aria-label="Lihat dari bawah"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="M6 9l6 6 6-6"/></svg></button><span></span>
 </div>
-<div id="visit" class="card hide"><div><b id="visitT"></b><small id="visitS"></small><div id="visitAct" class="hide"><span id="visitH"></span><button class="btn sm ghost" id="visitLike">Suka</button><button class="btn sm ghost" id="visitGift">Kirim 1 energi</button></div></div><button class="btn" id="visitBack">Pulang</button></div>
+<div id="visit" class="card hide"><div><b id="visitT"></b><small id="visitS"></small></div><div id="visitActs" class="hide" style="display:flex;gap:6px"></div><button class="btn" id="visitBack">Pulang</button></div>
 
 <div id="shop" class="card hide">
   <div class="shead"><div class="tabs" id="tabs"></div><button class="x" id="shopX" aria-label="Tutup">×</button></div>
@@ -1284,7 +1283,7 @@ function cropStage(o){const d=DEF[o.t],st=o.ready?(o.prog>=d.tm*3?3:2):(o.prog<d
 
 /* ---------- Keadaan permainan ---------- */
 function defaultS(){return{v:2,name:'Kota Nusantara',money:5000,gold:10,xp:0,level:1,day:1,hour:7,nextH:8,speed:1,tax:10,owned:Array(NC*NC).fill(false),nextId:1,seed:12345,energy:15,eTs:0,login:{last:'',streak:0},night:false,trains:0,planes:0,visits:{},met:{},
- stats:{built:0,roads:0,collected:0,earned:0,cleared:0,land:0,maxPop:0,tax:0,harvest:0},story:0,daily:{key:'',c:{},m:[]},ach:{},tut:0,tutOff:false,rep:{tax:0,inc:0,up:0},last:null,shadows:true};}
+ stats:{built:0,roads:0,collected:0,earned:0,cleared:0,land:0,maxPop:0,tax:0,harvest:0},story:0,friends:[],fcode:'',likes:0,daily:{key:'',c:{},m:[]},ach:{},tut:0,tutOff:false,rep:{tax:0,inc:0,up:0},last:null,shadows:true};}
 let S=defaultS();
 const C={pop:0,cap:0,jobs:0,happy:50,needs:{},workF:1,roads:[],walks:[],rails:[],term:0,airports:[],taxAdj:0,jobAdj:0,ready:0};
 const objs=new Map(),grid=new Int32Array(N*N);let dirty=true;
@@ -1802,7 +1801,7 @@ $('#mb').addEventListener('click',e=>{const t=e.target.closest('button');if(!t)r
  if(t.dataset.m!==undefined){const m=S.daily.m[+t.dataset.m];if(m&&!m.claimed&&mProg(m)>=m.n){m.claimed=true;S.money+=m.rp;S.gold+=m.gold;gainXP(m.xp);sfx('misi');toast(`Misi selesai! +Rp ${fmt(m.rp)}, +${m.gold} koin emas`,'good');renderModal();saveSoon();}return;}
  if(t.dataset.a){const a=ACH.find(x=>x[0]===t.dataset.a);if(a&&!S.ach[a[0]]&&a[3]()>=a[4]){S.ach[a[0]]=1;S.gold+=a[5];gainXP(20);sfx('misi');toast(`Pencapaian "${a[1]}": +${a[5]} koin emas`,'gold');renderModal();saveSoon();}return;}
  if(t.dataset.b){const n=+t.dataset.b;if(S.gold<n){toast('Koin emas tidak cukup','bad');return;}S.gold-=n;S.money+=n*400;toast(`+Rp ${fmt(n*400)} masuk kas`,'good');return;}
- const u=t.dataset.u;if(u==='save'){saveGame();toast('Tersimpan','good');}
+ const u=t.dataset.u;if(u==='save'){saveGame();cloudSave(true);cloudTick(true);toast(isFB()&&FBU?'Tersimpan di perangkat dan akun Google':'Tersimpan','good');}
  else if(u==='fs'){const d=document.documentElement;const p=d.requestFullscreen?d.requestFullscreen():null;if(p&&p.then)p.then(()=>{try{const q=screen.orientation&&screen.orientation.lock&&screen.orientation.lock('landscape');if(q&&q.catch)q.catch(()=>{});}catch(e){}}).catch(()=>toast('Layar penuh tidak didukung di sini','bad'));else toast('Layar penuh tidak didukung di sini','bad');}
  else if(u==='sh'){S.shadows=!S.shadows;applyShadows();renderModal();}
  else if(u==='mus'){AU.mus=!AU.mus;auSave();auStart();renderModal();}else if(u==='sfx'){AU.sfx=!AU.sfx;auSave();renderModal();}
@@ -1818,7 +1817,7 @@ $('#bar').addEventListener('click',e=>{const b=e.target.closest('.tb');if(!b)ret
  else if(a==='mis'){setMode('none');openModal('mis');}else if(a==='city'){setMode('none');openModal('city');}else if(a==='menu'){setMode('none');openModal('menu');}
  else if(a==='friends'){setMode('none');openModal('friends');}});
 $('#dn').addEventListener('click',e=>{const b=e.target.closest('button');if(b&&!visiting){S.night=b.dataset.n==='1';hud();saveSoon();}});
-$('#visitBack').onclick=()=>endVisit();$('#visitLike').onclick=()=>fbLike();$('#visitGift').onclick=()=>fbGift();
+$('#visitBack').onclick=()=>endVisit();$('#visitActs').addEventListener('click',e=>{const b=e.target.closest('button');if(b&&b.dataset.va)visitAct(b.dataset.va);});
 $('#camPad').addEventListener('click',e=>{const b=e.target.closest('[data-cv]');if(!b)return;if(b.dataset.cv==='r')setView(camView+1);else setView(+b.dataset.cv);saveSoon();});
 $('#cityCard').onclick=()=>openModal('city');
 $('#collectAll').onclick=()=>{let n=0,sum=0;for(const o of objs.values())if(o.ready){sum+=collect(o,true);n++;}if(n)toast(`${n} usaha dikumpulkan: +Rp ${fmt(sum)}`,'good');};
@@ -1855,7 +1854,7 @@ canvas.addEventListener('pointerup',e=>endPtr(e,false));canvas.addEventListener(
 canvas.addEventListener('wheel',e=>{e.preventDefault();zoomAt(e.clientX,e.clientY,Math.exp(-e.deltaY*.0015));},{passive:false});
 function pickObj(sx,sy){setRay(sx,sy);const hits=ray.intersectObjects(bldGroup.children,true);for(const h of hits){const o=objs.get(h.object.userData.id);if(o&&!special(o.t))return o;}const t=tileAt(sx,sy);return t?at(t.x,t.z):null;}
 function iconHit(sx,sy){let best=null,bd=34;for(const o of objs.values()){if(!o.icon||o.icon.userData.kind!=='coin')continue;const p=o.icon.position.clone().project(cam),x=(p.x+1)/2*innerWidth,y=(1-p.y)/2*innerHeight,d=Math.hypot(x-sx,y-sy);if(d<bd){bd=d;best=o;}}return best;}
-function handleTap(sx,sy,pt){if(visiting){if(visiting.fb)fbHelpTap(sx,sy);return;}const t=tileAt(sx,sy);
+function handleTap(sx,sy,pt){if(visiting)return;const t=tileAt(sx,sy);
  if(P){if(!t)return;const[w,d]=dims(P.t,P.r),ox=t.x-Math.floor((w-1)/2),oz=t.z-Math.floor((d-1)/2);
   if(pt==='mouse'){setGhost(ox,oz);confirmPlace();return;}const inside=t.x>=P.ox&&t.x<P.ox+w&&t.z>=P.oz&&t.z<P.oz+d;if(inside)confirmPlace();else setGhost(ox,oz);return;}
  if(mode==='land'){if(!t||!inB(t.x,t.z))return;const c=chunkOf(t.x,t.z);if(canBuy(c))askBuy(c);else if(!S.owned[c])toast('Beli dulu lahan yang berbatasan dengan kota','bad');return;}
@@ -1874,7 +1873,7 @@ const KEY='kota-nusantara-v1';let canStore=true,saveFlag=false;try{localStorage.
 function serialize(){const d=JSON.parse(JSON.stringify(S));d.objs=[...objs.values()].map(o=>{const a=[o.t,o.x,o.z,o.r,o.v,o.occ,Math.round(o.prog*10)/10,o.ready?1:0];if(o.bt>0)a.push(Math.round(o.bt*10)/10,o.bt0);return a;});d.ts=Date.now();return d;}
 function exportCode(){return btoa(unescape(encodeURIComponent(JSON.stringify(serialize()))));}
 function saveGame(){saveFlag=false;if(visiting)return;cloudSave();if(!canStore){$('#saved').textContent='Simpan otomatis tidak tersedia · pakai kode di Menu';return;}
- try{localStorage.setItem(KEY,JSON.stringify(serialize()));try{localStorage.setItem(KEY+'-ts',String(Date.now()));}catch(e){}const n=new Date();$('#saved').textContent=`Tersimpan otomatis ${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;}catch(e){$('#saved').textContent='Gagal menyimpan';}}
+ try{localStorage.setItem(KEY,JSON.stringify(serialize()));const n=new Date();$('#saved').textContent=`Tersimpan otomatis ${String(n.getHours()).padStart(2,'0')}:${String(n.getMinutes()).padStart(2,'0')}`;}catch(e){$('#saved').textContent='Gagal menyimpan';}}
 const saveSoon=()=>{saveFlag=true;};
 function clearWorld(){setMode('none');deselect();for(const o of objs.values()){if(o.mesh)bldGroup.remove(o.mesh);if(o.icon)iconGroup.remove(o.icon);}objs.clear();grid.fill(0);resetPools();
  cars.splice(0).forEach(a=>agentGroup.remove(a.g));peds.splice(0).forEach(a=>agentGroup.remove(a.g));clearWorkers();trains.splice(0).forEach(a=>a.cars.forEach(g=>agentGroup.remove(g)));ships.splice(0).forEach(s=>agentGroup.remove(s.g));shipKey='';planes.splice(0).forEach(p=>agentGroup.remove(p.g));airKey='';airCurve=null;}
@@ -1921,19 +1920,20 @@ function genCity(seed,lv,name){const r=rng(seed),g=new Uint8Array(N*N),road=new 
  for(let z=0;z<N;z++)for(let x=0;x<N;x++){if(g[z*N+x]||isWater(x,z))continue;if(r()<(own(x,z)?.03:.13)){out.push(['pohon_liar',x,z,0,Math.floor(r()*WILDN),0,0,0]);g[z*N+x]=1;}}
  return{name,owned,objs:out,level:lv,trains:0,planes:0,night:false};}
 let DB=null,USR=null,MYID=null,canWrite=true,localStamp=0,lastCloud='',lastCloudT=0,lastPush='',lastPushT=0,FR={list:[],loaded:false,loading:false,err:''};
-function waitTxt(ms){const h=Math.floor(ms/36e5),m=Math.ceil(ms%36e5/6e4);return h?`${h} jam ${m} menit`:`${m} menit`;}
+function waitTxt(ms){const t=Math.max(1,Math.ceil(ms/6e4)),h=Math.floor(t/60),m=t%60;return h?(m?`${h} jam ${m} menit`:`${h} jam`):`${m} menit`;}
 function rewardFor(id,npc){const H=visiting&&homeData?homeData:S;if(!(H.met||{})[id])return{n:5,why:'teman baru'};const last=(H.visits||{})[id]||0,el=Date.now()-last;if(el>=864e5)return{n:npc?3:1,why:'kunjungan harian'};return{n:0,wait:864e5-el};}
 function friendRewardsReady(){let n=0;for(const f of NPCS)if(rewardFor(f.id,true).n)n++;for(const f of FR.list)if(rewardFor(f.id,false).n)n++;return n;}
 function cityStr(){return JSON.stringify({name:S.name,owned:S.owned.map(b=>b?1:0),objs:[...objs.values()].map(o=>[o.t,o.x,o.z,o.r,o.v,o.occ,0,0]),level:S.level,trains:S.trains||0,planes:S.planes||0});}
-async function initOnline(){try{if(!window.claude||typeof window.claude.use!=='function'){fbInit();return;}NETK='claude';const[db,u]=await Promise.all([window.claude.use('db'),window.claude.use('user')]);if(!db||!u)return;
+async function initOnline(){if(!window.claude||typeof window.claude.use!=='function'){initFirebase();return;}try{const[db,u]=await Promise.all([window.claude.use('db'),window.claude.use('user')]);if(!db||!u)return;
  const id=await u.id();if(!id)return;DB=db;USR=u;MYID=id;try{const w=await u.can('data.write');if(w===false)canWrite=false;}catch(e){}
  try{const sn=await DB.doc('data/users/'+MYID+'/save').get();if(sn.exists){const v=sn.data();if(v&&typeof v.s==='string'&&v.ts>localStamp+5000&&!visiting){const d=JSON.parse(v.s);if(d&&Array.isArray(d.objs)){loadWorld(d);toast('Kota dimuat dari akunmu','good');}}}}catch(e){}
  cloudTick(true);}catch(e){DB=null;}}
-async function cloudSave(force){if(NETK==='fb')return fbCloudSave(force);if(!DB||!MYID||!canWrite||visiting)return;const now=Date.now();if(!force&&now-lastCloudT<60000)return;const str=JSON.stringify(serialize());if(str===lastCloud)return;lastCloudT=now;lastCloud=str;
- try{await DB.doc('data/users/'+MYID+'/save').set({ts:now,s:str});}catch(e){if(e&&e.code==='invalid_argument')canWrite=false;}}
-async function cloudTick(force){if(NETK==='fb')return fbCloudTick(force);if(!DB||!MYID||!canWrite||visiting)return;const now=Date.now();if(!force&&now-lastPushT<90000)return;lastPushT=now;const str=cityStr();if(str===lastPush)return;lastPush=str;
- try{await DB.doc('cities/'+MYID).set({city:String(S.name).slice(0,40),lvl:S.level,pop:C.pop,upd:now,data:str.length<240000?str:'{}'});}catch(e){if(e&&e.code==='invalid_argument')canWrite=false;lastPush='';}}
-async function loadFriends(){if(NETK==='fb')return fbLoadFriends();if(!DB||FR.loading)return;FR.loading=true;FR.err='';let to=setTimeout(()=>{FR.err='Daftar teman belum bisa dimuat. Coba lagi sebentar lagi.';FR.loading=false;if(modalKind==='friends')renderModal();},10000);
+async function cloudSave(force){if(!DB||!MYID||!canWrite||visiting)return;const now=Date.now();if(!force&&now-lastCloudT<(isFB()?120000:60000))return;const str=JSON.stringify(serialize());if(str===lastCloud)return;lastCloudT=now;lastCloud=str;
+ try{await DB.doc(isFB()?'users/'+MYID:'data/users/'+MYID+'/save').set({ts:now,s:str});}catch(e){lastCloud='';if(isFB())fbErr(e);else if(e&&e.code==='invalid_argument')canWrite=false;}}
+async function cloudTick(force){if(!DB||!MYID||!canWrite||visiting)return;const now=Date.now();if(!force&&now-lastPushT<(isFB()?180000:90000))return;lastPushT=now;const str=cityStr();if(str===lastPush)return;lastPush=str;
+ try{if(isFB())await DB.doc('cities/'+MYID).set({name:myName(),city:String(S.name||'Kota').slice(0,40),level:Math.max(1,Math.min(25,S.level|0)),pop:C.pop|0,code:MYCODE||'',data:str.length<240000?str:'{}',updatedAt:firebase.firestore.FieldValue.serverTimestamp()});
+  else await DB.doc('cities/'+MYID).set({city:String(S.name).slice(0,40),lvl:S.level,pop:C.pop,upd:now,data:str.length<240000?str:'{}'});}catch(e){if(isFB())fbErr(e);else if(e&&e.code==='invalid_argument')canWrite=false;lastPush='';}}
+async function loadFriends(){if(FBstate!=='off'){loadFriendsFB();return;}if(!DB||FR.loading)return;FR.loading=true;FR.err='';let to=setTimeout(()=>{FR.err='Daftar teman belum bisa dimuat. Coba lagi sebentar lagi.';FR.loading=false;if(modalKind==='friends')renderModal();},10000);
  try{const q=await DB.collection('cities').orderBy('upd','desc').limit(50).get();clearTimeout(to);const docs=q.docs.filter(d=>d.exists&&d.id!==MYID);let names={};
   try{if(USR&&USR.profiles)names=await USR.profiles(docs.map(d=>d.id));}catch(e){}
   FR.list=docs.map(d=>{const v=d.data()||{};return{id:d.id,name:(names[d.id]&&names[d.id].name)||'Pemain',city:String(v.city||'Kota'),lvl:+v.lvl||1,pop:+v.pop||0,data:typeof v.data==='string'?v.data:''};});FR.loaded=true;}
@@ -1941,97 +1941,129 @@ async function loadFriends(){if(NETK==='fb')return fbLoadFriends();if(!DB||FR.lo
 function frRow(f,npc){const rw=rewardFor(f.id,npc),ini=esc((f.name||'?').trim().charAt(0).toUpperCase()||'?');
  const st=rw.n?`<span style="color:#c0650a;font-weight:700">+${rw.n} ${BOLT} ${rw.why}</span>`:`Hadiah lagi dalam ${waitTxt(rw.wait)}`;
  return`<div class="fr"><div class="av" style="background:${npc?f.col:'#8a5a3a'}">${ini}</div><div class="t"><b>${esc(f.name)} · ${esc(f.city)}</b><small>${npc?'Tetangga NPC':'Teman'} · Level ${f.lvl||f.lv||1}${f.pop?' · '+fmt(f.pop)+' warga':''}<br>${st}</small></div><button class="btn sm ${rw.n?'':'ghost'}" data-v="${esc(f.id)}">Kunjungi</button></div>`;}
-function renderFriends(mb){let h=`<p class="note">Kunjungi kota lain untuk mendapat energi: teman baru +5, lalu +1 per teman tiap 24 jam, atau +3 untuk tetangga NPC.</p><div class="sec">Tetangga</div>`+NPCS.map(f=>frRow(f,true)).join('');
+function renderFriends(mb){
+ if(FBstate!=='off'){let h=onlineBox()+`<div class="sec">Tetangga</div>`+NPCS.map(f=>frRow(f,true)).join('')+`<div class="sec">Teman</div>`;
+  if(FBstate!=='online')h+=`<p class="note">Masuk dengan Google dulu untuk melihat dan menambah teman sungguhan.</p>`;
+  else if(FR.loading&&!FR.loaded)h+=`<p class="note">Memuat teman…</p>`;else if(FR.err)h+=`<p class="note">${esc(FR.err)}</p>`;
+  else if(!FR.list.length)h+=`<p class="note">Belum ada teman. Bagikan kodemu <b>${esc(MYCODE)}</b> ke teman, atau masukkan kode mereka di atas.</p>`;else h+=FR.list.map(f=>frRow(f,false)).join('');
+  if(FBstate==='online'&&(FR.others||[]).length)h+=`<div class="sec">Pemain lain</div>`+FR.others.map(f=>frRowFB(f,true)).join('');
+  h+=`<p class="note" style="margin-top:8px">Hadiah energi kunjungan: teman baru +5, lalu +1 per teman tiap 24 jam, tetangga NPC +3.</p>`;
+  if(mb.dataset.h!==h){const inp=mb.querySelector('#frcode'),foc=inp&&document.activeElement===inp;if(inp)FR.inp=inp.value;mb.innerHTML=h;mb.dataset.h=h;const i2=mb.querySelector('#frcode');if(i2){i2.value=FR.inp||'';if(foc)i2.focus();i2.onkeydown=e=>{if(e.key==='Enter')addByCode(i2.value);};}}
+  return;}
+let h=`<p class="note">Kunjungi kota lain untuk mendapat energi: teman baru +5, lalu +1 per teman tiap 24 jam, atau +3 untuk tetangga NPC.</p><div class="sec">Tetangga</div>`+NPCS.map(f=>frRow(f,true)).join('');
  h+=`<div class="sec">Teman yang bermain</div>`;
- if(NETK==='fb'){const u=fbS.user;
-  if(!u)h+=`<p class="note">${fbS.err?`<b style="color:#c0392b">${esc(fbS.err)}</b><br>`:''}${fbS.loading?'Menghubungkan ke server…':'Masuk dengan akun Google untuk menyimpan kota di cloud, menambah teman lewat kode, dan saling berkunjung.'}</p><button class="btn green" data-fb="login" style="width:100%">Masuk dengan Google</button>`;
-  else h+=`<div class="fbbox"><div><span class="onl">● Online</span> sebagai <b>${esc(u.displayName||'Pemain')}</b></div><div>Kode temanmu: <b class="code">${esc(fbS.code||'…')}</b> <button class="btn sm ghost" data-fb="copy">Salin</button></div><div class="addf"><input id="fbCode" placeholder="Kode teman, mis. KN-7F3QX" maxlength="9" autocomplete="off" autocapitalize="characters"><button class="btn sm" data-fb="add">Tambah</button></div><small>Bagikan kodemu ke teman. Saat berkunjung, ketuk bangunan teman untuk membantu (maks. 5 kali sehari).</small><button class="btn sm ghost" data-fb="logout">Keluar</button></div>`;
-  if(u){if(FR.loading&&!FR.loaded)h+=`<p class="note">Memuat daftar teman…</p>`;else if(FR.err)h+=`<p class="note">${esc(FR.err)}</p>`;else if(!FR.list.length)h+=`<p class="note">Belum ada teman. Masukkan kode teman di atas, atau bagikan kodemu.</p>`;else h+=FR.list.map(f=>frRow(f,false)).join('');}
-  if(mb.dataset.h!==h){mb.innerHTML=h;mb.dataset.h=h;}return;}
  if(!DB)h+=`<p class="note">Teman online belum aktif di sini. Fitur ini menyala saat game dibuka dari tautan claude.ai yang dibagikan pemilik game, dan pemain sudah masuk ke akun Claude.</p>`;
  else if(!canWrite)h+=`<p class="note">Kamu bisa melihat kota teman, tapi kotamu belum bisa dibagikan. Minta pemilik game memberimu akses Kontributor.</p>`;
  if(DB){if(FR.loading&&!FR.loaded)h+=`<p class="note">Memuat daftar teman…</p>`;else if(FR.err)h+=`<p class="note">${esc(FR.err)}</p>`;else if(!FR.list.length)h+=`<p class="note">Belum ada teman lain yang bermain. Bagikan game ini ke temanmu, lalu kota mereka akan muncul di sini.</p>`;else h+=FR.list.map(f=>frRow(f,false)).join('');}
  if(mb.dataset.h!==h){mb.innerHTML=h;mb.dataset.h=h;}}
-
-/* ---------- Online lewat Firebase (dipakai saat game dibuka dari situs sendiri, mis. Netlify) ---------- */
-const FBCFG={apiKey:"AIzaSyAf08eftzDkuhYDOD3404Hd0mGeAzJb5qo",authDomain:"kotaharapan-d032e.firebaseapp.com",projectId:"kotaharapan-d032e",storageBucket:"kotaharapan-d032e.firebasestorage.app",messagingSenderId:"460264934670",appId:"1:460264934670:web:8832d4bf39c71a573d5b5f"};
-const FBU='https://www.gstatic.com/firebasejs/10.14.1/';
-let FB=null,NETK='';const fbS={loading:false,err:'',user:null,code:'',friends:[],unsub:[],pend:[]};
-const FVS={helps:0,like:false,gift:false,done:new Set()};
-const dayId=()=>{const d=new Date();return d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');};
-function fbErr(e,quiet){const c=String(e&&e.code||e&&e.message||e);let m='Gagal terhubung: '+c;
- if(c.includes('unauthorized-domain'))m='Alamat situs ini belum didaftarkan di Firebase (Authentication → Settings → Authorized domains).';
- else if(c.includes('permission-denied'))m='Izin database ditolak. Pastikan aturan Firestore sudah di-Publish.';
- else if(c.includes('network-request-failed')||c.includes('unavailable'))m='Koneksi internet bermasalah. Coba lagi.';
- else if(c.includes('popup-closed-by-user')||c.includes('cancelled-popup'))m='Masuk dibatalkan.';
- fbS.err=m;if(!quiet)toast(m,'bad');if(modalKind==='friends')renderModal();}
-async function fbInit(){if(!/^https?:$/.test(location.protocol))return;NETK='fb';fbS.loading=true;
- try{const[a,au,fs]=await Promise.all([import(FBU+'firebase-app.js'),import(FBU+'firebase-auth.js'),import(FBU+'firebase-firestore.js')]);
-  const app=a.initializeApp(FBCFG),auth=au.getAuth(app),db=fs.getFirestore(app);FB={auth,db,au,fs};
-  try{await au.getRedirectResult(auth);}catch(e){fbErr(e);}
-  au.onAuthStateChanged(auth,u=>{fbS.user=u;fbS.loading=false;if(u)fbOnLogin(u);else fbOnLogout();if(modalKind==='friends')renderModal();});}
- catch(e){fbS.loading=false;fbS.err='Server game tidak bisa dihubungi. Periksa internet lalu muat ulang.';if(modalKind==='friends')renderModal();}}
-async function fbLogin(){if(!FB){toast(fbS.err||'Server game belum siap, tunggu sebentar.','bad');return;}const p=new FB.au.GoogleAuthProvider();p.setCustomParameters({prompt:'select_account'});fbS.err='';
- try{await FB.au.signInWithPopup(FB.auth,p);}catch(e){const c=String(e&&e.code);if(c.includes('popup-blocked')||c.includes('operation-not-supported')){try{await FB.au.signInWithRedirect(FB.auth,p);}catch(e2){fbErr(e2);}}else fbErr(e,c.includes('popup-closed'));}}
-async function fbLogout(){if(!FB)return;await cloudSave(true);try{await FB.au.signOut(FB.auth);}catch(e){}toast('Kamu keluar dari akun. Game tetap bisa dimainkan offline.','');}
-const progScore=d=>((d&&d.level)||1)*1e7+((d&&d.xp)||0);
-async function fbOnLogin(u){const{doc,getDoc,setDoc}=FB.fs;MYID=u.uid;DB='fb';canWrite=true;lastCloud='';lastPush='';
- try{const sn=await getDoc(doc(FB.db,'users',u.uid)),v=sn.exists()?sn.data():{};fbS.friends=Array.isArray(v.friends)?v.friends.filter(x=>typeof x==='string').slice(0,200):[];fbS.code=v.code||'';
-  if(typeof v.s==='string'&&!visiting){let d=null;try{d=JSON.parse(v.s);}catch(e){}let lt=0;try{lt=+(localStorage.getItem(KEY+'-ts')||0);}catch(e){}
-   if(d&&Array.isArray(d.objs)&&((v.ts||0)>lt+5000||progScore(d)>progScore(S))){loadWorld(d);toast('Kota dimuat dari akunmu','good');}}
-  if(!fbS.code)await fbMakeCode();
-  toast(`Online sebagai ${u.displayName||'Pemain'}`,'good');}
- catch(e){fbErr(e);}
- fbListen();cloudSave(true);cloudTick(true);loadFriends();}
-function fbOnLogout(){fbS.unsub.forEach(f=>{try{f();}catch(e){}});fbS.unsub=[];MYID=null;DB=null;FR.list=[];FR.loaded=false;fbS.friends=[];fbS.code='';}
-async function fbMakeCode(){const{doc,setDoc}=FB.fs,A='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
- for(let i=0;i<8;i++){let c='KN-';for(let k=0;k<5;k++)c+=A[(Math.random()*A.length)|0];
-  try{await setDoc(doc(FB.db,'codes',c),{uid:MYID});fbS.code=c;await setDoc(doc(FB.db,'users',MYID),{code:c},{merge:true});return;}catch(e){if(!String(e.code).includes('permission'))throw e;}}}
-function fbListen(){const{collection,onSnapshot,deleteDoc,doc,setDoc}=FB.fs;fbS.unsub.forEach(f=>f());fbS.unsub=[];
- fbS.unsub.push(onSnapshot(collection(FB.db,'cities',MYID,'requests'),qs=>{qs.docChanges().forEach(ch=>{if(ch.type!=='added')return;const id=ch.doc.id,v=ch.doc.data()||{};
-  if(!fbS.friends.includes(id)){fbS.friends.push(id);setDoc(doc(FB.db,'users',MYID),{friends:fbS.friends},{merge:true}).catch(()=>{});toast(`${v.name||'Pemain'} dari ${v.city||'kota lain'} menambahkanmu sebagai teman!`,'good');sfx('misi');loadFriends();}
-  deleteDoc(ch.doc.ref).catch(()=>{});});},e=>fbErr(e,true)));
- fbS.unsub.push(onSnapshot(collection(FB.db,'cities',MYID,'visits'),qs=>{qs.docChanges().forEach(ch=>{if(ch.type==='added'){fbS.pend.push(ch.doc);}});fbVisitsDo();},e=>fbErr(e,true)));}
-function fbVisitsDo(){if(visiting||!fbS.pend.length)return;const{deleteDoc}=FB.fs;
- for(const d of fbS.pend.splice(0)){const v=d.data()||{},h=Math.max(0,Math.min(5,v.helps|0)),rp=h*(25+S.level*10);S.money+=rp;if(v.gift)S.energy+=1;if(v.like)gainXP(10);
-  const bits=[];if(h)bits.push(`membantu ${h}× (+Rp ${fmt(rp)})`);if(v.gift)bits.push('mengirim hadiah +1 energi');if(v.like)bits.push('menyukai kotamu (+10 XP)');
-  toast(`${v.name||'Teman'} mengunjungi kotamu`+(bits.length?': '+bits.join(', '):''),'gold');sfx('misi');deleteDoc(d.ref).catch(()=>{});}
- saveSoon();hud();}
-async function fbCloudSave(force){if(!FB||!MYID||visiting)return;const now=Date.now();if(!force&&now-lastCloudT<60000)return;const str=JSON.stringify(serialize());if(str===lastCloud)return;lastCloudT=now;lastCloud=str;
- try{await FB.fs.setDoc(FB.fs.doc(FB.db,'users',MYID),{ts:now,s:str,friends:fbS.friends,code:fbS.code},{merge:true});}catch(e){lastCloud='';fbErr(e,true);}}
-async function fbCloudTick(force){if(!FB||!MYID||visiting)return;const now=Date.now();if(!force&&now-lastPushT<90000)return;lastPushT=now;const str=cityStr();if(str===lastPush)return;lastPush=str;
- try{await FB.fs.setDoc(FB.fs.doc(FB.db,'cities',MYID),{name:String(fbS.user&&fbS.user.displayName||'Pemain').slice(0,30),city:String(S.name).slice(0,40),level:Math.max(1,Math.min(25,S.level|0)),pop:Math.round(C.pop)|0,code:fbS.code||'',data:str.length<240000?str:'{}',updatedAt:FB.fs.serverTimestamp()});}catch(e){lastPush='';fbErr(e,true);}}
-async function fbLoadFriends(){if(!FB||!MYID||FR.loading)return;FR.loading=true;FR.err='';const{doc,getDoc}=FB.fs;
- try{const res=await Promise.all(fbS.friends.map(id=>getDoc(doc(FB.db,'cities',id)).then(s=>s.exists()?{id,v:s.data()}:null).catch(()=>null)));
-  FR.list=res.filter(Boolean).map(({id,v})=>({id,fb:true,name:String(v.name||'Pemain'),city:String(v.city||'Kota'),lvl:+v.level||1,pop:+v.pop||0,data:typeof v.data==='string'?v.data:''}));FR.loaded=true;}
- catch(e){FR.err='Daftar teman belum bisa dimuat.';}FR.loading=false;if(modalKind==='friends')renderModal();}
-async function fbAddFriend(raw){const code=String(raw||'').trim().toUpperCase();if(!/^KN-[A-Z0-9]{4,6}$/.test(code)){toast('Kode teman tidak valid. Contoh: KN-7F3QX','bad');return;}
- if(code===fbS.code){toast('Itu kode milikmu sendiri','bad');return;}const{doc,getDoc,setDoc,serverTimestamp}=FB.fs;
- try{const sn=await getDoc(doc(FB.db,'codes',code));if(!sn.exists()){toast('Kode teman tidak ditemukan','bad');return;}const uid=sn.data().uid;
-  if(fbS.friends.includes(uid)){toast('Kalian sudah berteman','');return;}fbS.friends.push(uid);await setDoc(doc(FB.db,'users',MYID),{friends:fbS.friends},{merge:true});
-  try{await setDoc(doc(FB.db,'cities',uid,'requests',MYID),{name:String(fbS.user.displayName||'Pemain').slice(0,30),city:String(S.name).slice(0,40),code:fbS.code,at:serverTimestamp()});}catch(e){}
-  toast('Teman ditambahkan! Kota mereka muncul di daftar.','good');sfx('misi');loadFriends();}catch(e){fbErr(e);}}
-function fbHelpTap(sx,sy){const t=tileAt(sx,sy);if(!t)return;const o=at(t.x,t.z);if(!o||!DEF[o.t])return;const c=DEF[o.t].c;if(!['rumah','usaha','kebun','fasilitas','landmark','laut'].includes(c))return;
- if(!visiting.canHelp){toast('Kamu sudah membantu kota ini hari ini. Datang lagi besok!','');return;}if(FVS.helps>=5){toast('Bantuan hari ini sudah 5 kali. Datang lagi besok!','');return;}if(FVS.done.has(o.id)){toast('Bangunan ini sudah kamu bantu','');return;}
- FVS.done.add(o.id);FVS.helps++;const rp=10+(homeData&&homeData.level||1)*5;if(homeData){homeData.money=(homeData.money||0)+rp;homeData.xp=(homeData.xp||0)+2;}
- floatAt(center(o),model(o.t,o.v).h+.3,c==='kebun'?`Disiram! +Rp ${rp}`:`Dibantu! +Rp ${rp}`,'#7dff9a');sfx(c==='kebun'?'panen':'koin');fbVisitUI();}
-function fbVisitUI(){const fb=!!(visiting&&visiting.fb);$('#visitAct').classList.toggle('hide',!fb);if(!fb)return;$('#visitH').textContent=visiting.canHelp?`Bantuan ${FVS.helps}/5 · ketuk bangunan`:'Sudah dibantu hari ini';
- $('#visitLike').textContent=FVS.like?'Disukai':'Suka';$('#visitLike').disabled=FVS.like||!visiting.canHelp;$('#visitGift').textContent=FVS.gift?'Hadiah terkirim':'Kirim 1 energi';$('#visitGift').disabled=FVS.gift||!visiting.canHelp;}
-function fbGift(){if(!visiting||!visiting.fb||FVS.gift||!visiting.canHelp)return;if(!homeData||(homeData.energy||0)<1){toast('Energimu habis, tidak bisa mengirim hadiah','bad');return;}homeData.energy-=1;FVS.gift=true;toast('Hadiah 1 energi akan diterima temanmu','good');sfx('misi');fbVisitUI();}
-function fbLike(){if(!visiting||!visiting.fb||FVS.like||!visiting.canHelp)return;FVS.like=true;toast('Kamu menyukai kota ini','good');sfx('klik');fbVisitUI();}
-async function fbVisitEnd(f){if(!FB||!MYID||!f||!f.fb||!f.canHelp)return;const id=MYID+'_'+dayId();
- try{await FB.fs.setDoc(FB.fs.doc(FB.db,'cities',f.id,'visits',id),{from:MYID,name:String(fbS.user&&fbS.user.displayName||'Pemain').slice(0,30),helps:FVS.helps,gift:FVS.gift,like:FVS.like,at:FB.fs.serverTimestamp()});}catch(e){}}
 let visiting=null,homeData=null;
-function startVisit(id){const npc=NPCS.find(f=>f.id===id),fr=npc?null:FR.list.find(f=>f.id===id);if(!npc&&!fr)return;let data;
+function startVisit(id){const npc=NPCS.find(f=>f.id===id),fr=npc?null:(FR.list.find(f=>f.id===id)||(FR.others||[]).find(f=>f.id===id));if(!npc&&!fr)return;let data;
  if(npc)data=genCity(npc.seed,npc.lv,npc.city);else{try{const v=JSON.parse(fr.data);data={name:fr.city,owned:(v.owned||[]).map(b=>!!b),objs:Array.isArray(v.objs)?v.objs.filter(a=>Array.isArray(a)&&typeof a[0]==='string'&&DEF[a[0]]&&[1,2,3,4].every(i=>Number.isFinite(a[i]))).slice(0,3000).map(a=>[a[0],a[1]|0,a[2]|0,(a[3]|0)&3,a[4]|0,a[5]|0,0,0]):[],level:+v.level||1,trains:Math.min(6,v.trains|0),planes:Math.min(4,v.planes|0)};}catch(e){toast('Kota teman ini belum bisa dibuka','bad');return;}}
- const f=npc||fr,rw=rewardFor(id,!!npc);if(fr&&fr.fb){fr.canHelp=(S.fbHelp||{})[id]!==dayId();FVS.helps=0;FVS.like=false;FVS.gift=false;FVS.done=new Set();}closeModal();setMode('none');S.met[id]=true;if(rw.n){S.visits[id]=Date.now();S.energy+=rw.n;}saveGame();homeData=serialize();visiting=f;
+ const f=npc||fr,rw=rewardFor(id,!!npc);closeModal();setMode('none');S.met[id]=true;if(rw.n){S.visits[id]=Date.now();S.energy+=rw.n;}saveGame();homeData=serialize();visiting=f;
  const myNight=S.night;loadWorld(Object.assign({},data,{night:myNight}),true);S.night=myNight;
- $('#bar').classList.add('hide');$('#tut').classList.add('hide');$('#collectAll').classList.add('hide');$('#visit').classList.remove('hide');$('#visitT').textContent=`Berkunjung ke ${data.name||'kota teman'}`;$('#visitS').textContent=npc?`Tetangga NPC · ${f.name}`:`Kota milik ${f.name}`;fbVisitUI();
+ $('#bar').classList.add('hide');$('#tut').classList.add('hide');$('#collectAll').classList.add('hide');$('#visit').classList.remove('hide');$('#visitT').textContent=`Berkunjung ke ${data.name||'kota teman'}`;$('#visitS').textContent=npc?`Tetangga NPC · ${f.name}`:`Kota milik ${f.name}`;VIS=(!npc&&isFB()&&FBU)?{id:fr.id,helps:0,like:false,gift:false}:null;visActs();
  camT.set(24,0,24);updCam();toast(rw.n?`Kamu dapat +${rw.n} energi (${rw.why})`:`Sudah berkunjung hari ini. Hadiah lagi dalam ${waitTxt(rw.wait)}`,rw.n?'good':'');}
-function endVisit(){if(!visiting)return;const n=S.night,vf=visiting;visiting=null;const h=homeData;homeData=null;loadWorld(h);S.night=n;if(vf.fb&&vf.canHelp){S.fbHelp=S.fbHelp||{};S.fbHelp[vf.id]=dayId();fbVisitEnd(vf);}fbVisitUI();setTimeout(fbVisitsDo,800);$('#visit').classList.add('hide');$('#bar').classList.remove('hide');camT.set(24,0,24);updCam();saveGame();toast('Kembali ke kotamu','good');}
+function endVisit(){if(!visiting)return;sendVisit();const n=S.night;visiting=null;const h=homeData;homeData=null;loadWorld(h);S.night=n;$('#visit').classList.add('hide');$('#bar').classList.remove('hide');camT.set(24,0,24);updCam();visActs();saveGame();toast('Kembali ke kotamu','good');}
 $('#mb').addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;if(b.dataset.v){startVisit(b.dataset.v);return;}
- if(b.dataset.fb){const a=b.dataset.fb;if(a==='login')fbLogin();else if(a==='logout')fbLogout();else if(a==='add'){const i=$('#fbCode');fbAddFriend(i&&i.value);}else if(a==='copy'){const c=fbS.code;(navigator.clipboard?navigator.clipboard.writeText(c):Promise.reject()).then(()=>toast('Kode teman disalin: '+c,'good')).catch(()=>toast('Kode temanmu: '+c,''));}return;}
+ if(b.dataset.fb){const k=b.dataset.fb;if(k==='in')fbSignIn();else if(k==='out')fbSignOut();else if(k==='add'){const i=$('#frcode');addByCode(i?i.value:'');}else if(k==='copy'){const t=MYCODE;(navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(()=>toast('Kode '+t+' disalin. Kirim ke temanmu!','good')).catch(()=>toast('Kode temanmu: '+t,''));}return;}
+ if(b.dataset.fbadd){addByCode(b.dataset.fbadd);return;}
  if(b.dataset.u==='claimLogin'){const k=dkey();if(S.login.last===k)return;const st=nextStreak(),n=Math.min(st,5);S.login={last:k,streak:st};S.energy+=n;toast(`Bonus login hari ke-${st}: +${n} energi`,'good');renderModal();saveSoon();}});
+
+/* ---------- Online lewat Firebase (dipakai saat game dibuka di luar claude.ai, misalnya di Netlify) ---------- */
+const FBCFG={apiKey:"AIzaSyAf08eftzDkuhYDOD3404Hd0mGeAzJb5qo",authDomain:"kotaharapan-d032e.firebaseapp.com",projectId:"kotaharapan-d032e",storageBucket:"kotaharapan-d032e.firebasestorage.app",messagingSenderId:"460264934670",appId:"1:460264934670:web:8832d4bf39c71a573d5b5f"};
+const FBV='10.12.2';
+let FB=null,FBU=null,FBstate='off',FBerr='',MYCODE='',VIS=null,unsubs=[];
+const isFB=()=>!!FB;
+const home=()=>visiting&&homeData?homeData:S;
+const myName=()=>String((FBU&&FBU.displayName)||'Pemain').slice(0,30);
+const renderAny=()=>{if(modalKind==='friends'||modalKind==='menu')renderModal();};
+function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=()=>rej(new Error(src));document.head.appendChild(s);});}
+function authMsg(e){const c=e&&e.code||'';return{'auth/unauthorized-domain':'Alamat situs ini belum didaftarkan di Firebase (Authentication → Settings → Authorized domains).','auth/operation-not-allowed':'Login Google belum diaktifkan di Firebase (Authentication → Sign-in method → Google).','auth/popup-closed-by-user':'Login dibatalkan.','auth/cancelled-popup-request':'Login dibatalkan.','auth/network-request-failed':'Koneksi internet bermasalah. Coba lagi.','auth/internal-error':'Login gagal. Coba lagi sebentar lagi.'}[c]||('Login gagal'+(c?' ('+c+')':'')+'.');}
+function fbMsg(e){const c=e&&e.code||'';if(c==='permission-denied')return'Izin ditolak database. Pastikan aturan keamanan (Firestore → Rules) sudah di-Publish.';if(c==='unavailable')return'Server online tidak terjangkau. Periksa koneksi internet.';if(c==='failed-precondition'||c==='not-found')return'Database Firestore belum dibuat di proyek Firebase.';return'Gagal tersambung ke server'+(c?' ('+c+')':'')+'.';}
+function fbErr(e){FBerr=fbMsg(e);renderAny();}
+async function initFirebase(){if(location.protocol==='file:'){FBstate='file';return;}FBstate='loading';
+ try{const b=`https://www.gstatic.com/firebasejs/${FBV}/`;await loadScript(b+'firebase-app-compat.js');await Promise.all([loadScript(b+'firebase-auth-compat.js'),loadScript(b+'firebase-firestore-compat.js')]);
+  if(!firebase.apps.length)firebase.initializeApp(FBCFG);FB={auth:firebase.auth(),db:firebase.firestore()};FBstate='signedout';
+  FB.auth.getRedirectResult().catch(e=>{FBerr=authMsg(e);renderAny();});FB.auth.onAuthStateChanged(u=>{onFBUser(u);});}
+ catch(e){FB=null;FBstate='error';FBerr='Tidak bisa memuat layanan online. Periksa koneksi internet, lalu muat ulang.';}
+ renderAny();}
+async function fbSignIn(){if(!FB)return;FBerr='';FBstate='signing';renderAny();const p=new firebase.auth.GoogleAuthProvider();p.setCustomParameters({prompt:'select_account'});
+ try{await FB.auth.signInWithPopup(p);}
+ catch(e){const c=e&&e.code;if(c==='auth/popup-blocked'||c==='auth/operation-not-supported-in-this-environment'){try{await FB.auth.signInWithRedirect(p);return;}catch(e2){FBerr=authMsg(e2);}}else FBerr=authMsg(e);if(!FBU)FBstate='signedout';}
+ renderAny();}
+async function fbSignOut(){if(!FB||!FBU)return;await cloudSave(true);await cloudTick(true);unsubs.forEach(f=>{try{f();}catch(e){}});unsubs=[];await FB.auth.signOut();toast('Kamu keluar dari akun. Game tetap bisa dimainkan offline.','');}
+const CODEA='ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+function codeFrom(uid,salt){let h=2166136261^salt;for(const ch of uid+'#'+salt){h^=ch.charCodeAt(0);h=Math.imul(h,16777619)>>>0;}let s='';for(let i=0;i<5;i++){s+=CODEA[h%32];h=Math.floor(h/32)^Math.imul(h,2654435761)>>>7;h>>>=0;}return s;}
+async function ensureCode(){const H=home();if(H.fcode){try{const s=await DB.doc('codes/'+H.fcode).get();if(s.exists&&(s.data()||{}).uid===MYID){MYCODE=H.fcode;return;}if(!s.exists){await DB.doc('codes/'+H.fcode).set({uid:MYID});MYCODE=H.fcode;return;}}catch(e){}}
+ for(let i=0;i<8&&!MYCODE;i++){const c='KN-'+codeFrom(MYID,i);try{const s=await DB.doc('codes/'+c).get();if(s.exists){if((s.data()||{}).uid===MYID)MYCODE=c;continue;}await DB.doc('codes/'+c).set({uid:MYID});MYCODE=c;}catch(e){fbErr(e);break;}}
+ if(MYCODE&&H.fcode!==MYCODE){H.fcode=MYCODE;saveSoon();}}
+async function onFBUser(u){unsubs.forEach(f=>{try{f();}catch(e){}});unsubs=[];MYCODE='';
+ if(!u){FBU=null;DB=null;MYID=null;FBstate=FB?'signedout':FBstate;FR.list=[];FR.others=[];FR.loaded=false;renderAny();return;}
+ FBU=u;DB=FB.db;MYID=u.uid;canWrite=true;FBstate='online';FBerr='';lastPush='';lastCloud='';renderAny();
+ let ok=true;try{const sn=await DB.doc('users/'+MYID).get();const v=sn.exists?sn.data():null;let d=null;try{d=v&&typeof v.s==='string'?JSON.parse(v.s):null;}catch(e){}if(d&&!Array.isArray(d.objs))d=null;
+  const H=home(),sc=x=>(x.level||1)*1e7+(x.xp||0)*10+((x.stats&&x.stats.built)||0),mine=H.cloudUid===MYID,other=!!H.cloudUid&&!mine;
+  if(!visiting){if(d&&(mine?v.ts>localStamp+5000:(other||sc(d)>=sc(H)))){loadWorld(d);toast('Kota dimuat dari akun Google-mu','good');}
+   else if(!d&&other){newGame();toast('Akun baru: kota baru dibuat untukmu','good');}}
+  S.cloudUid=MYID;}
+ catch(e){ok=false;fbErr(e);}
+ if(!ok){renderAny();return;}
+ await ensureCode();await cloudSave(true);await cloudTick(true);listenFB();loadFriends();
+ toast(`Online sebagai ${myName()}${MYCODE?' · kode temanmu '+MYCODE:''}`,'good');renderAny();}
+function listenFB(){if(!DB||!MYID)return;
+ unsubs.push(DB.collection('cities/'+MYID+'/visits').onSnapshot(q=>{q.docChanges().forEach(ch=>{if(ch.type!=='added')return;gotVisit(ch.doc.data()||{});ch.doc.ref.delete().catch(()=>{});});},e=>fbErr(e)));
+ unsubs.push(DB.collection('cities/'+MYID+'/requests').onSnapshot(q=>{q.docChanges().forEach(ch=>{if(ch.type!=='added')return;const v=ch.doc.data()||{};addFriendLocal(ch.doc.id,v.name,v.city,v.code,true);ch.doc.ref.delete().catch(()=>{});});},e=>fbErr(e)));}
+function gotVisit(v){const H=home(),h=Math.max(0,Math.min(5,v.helps|0)),rp=h*(30+(H.level||1)*10),nm=String(v.name||'Teman').slice(0,30);
+ H.money+=rp;if(v.gift)H.energy+=2;H.likes=(H.likes||0)+(v.like?1:0);
+ const parts=[];if(h)parts.push(`membantu ${h} kali (+Rp ${fmt(rp)})`);if(v.gift)parts.push('memberi hadiah +2 energi');if(v.like)parts.push('menyukai kotamu');
+ sfx('misi');toast(`${nm} mengunjungi kotamu${parts.length?': '+parts.join(', '):''}`,'gold');hud();saveSoon();}
+function addFriendLocal(id,name,city,code,fromReq){if(!id||id===MYID)return;const H=home();H.friends=Array.isArray(H.friends)?H.friends:[];let f=H.friends.find(x=>x.id===id);
+ if(!f){f={id};H.friends.push(f);if(fromReq){sfx('misi');toast(`${String(name||'Pemain').slice(0,30)} menambahkanmu sebagai teman!`,'good');}}
+ f.name=String(name||f.name||'Pemain').slice(0,30);f.city=String(city||f.city||'Kota').slice(0,40);if(code)f.code=code;saveSoon();if(!visiting)setTimeout(()=>cloudSave(true),300);if(modalKind==='friends')loadFriends();}
+async function addByCode(raw){let c=String(raw||'').trim().toUpperCase().replace(/\s+/g,'');if(c&&!c.startsWith('KN-'))c='KN-'+c.replace(/^KN/,'');
+ if(!/^KN-[A-Z0-9]{4,6}$/.test(c)){FR.msg='Kode tidak valid. Contoh: KN-7F3QX';renderAny();return;}
+ if(c===MYCODE){FR.msg='Itu kode milikmu sendiri.';renderAny();return;}
+ FR.msg='Mencari pemain…';renderAny();
+ try{const s=await DB.doc('codes/'+c).get();if(!s.exists){FR.msg='Kode tidak ditemukan. Periksa lagi hurufnya.';renderAny();return;}
+  const uid=(s.data()||{}).uid;const cs=await DB.doc('cities/'+uid).get();const v=cs.exists?cs.data():{};addFriendLocal(uid,v.name,v.city,c,false);
+  await DB.doc('cities/'+uid+'/requests/'+MYID).set({name:myName(),city:String(home().name||'Kota').slice(0,40),code:MYCODE||'',at:firebase.firestore.FieldValue.serverTimestamp()}).catch(()=>{});
+  FR.msg=`${v.name||'Pemain'} sudah jadi temanmu!`;FR.inp='';sfx('misi');saveGame();loadFriends();}
+ catch(e){FR.msg=fbMsg(e);renderAny();}}
+async function loadFriendsFB(){if(!DB){FR.loaded=false;renderAny();return;}if(FR.loading)return;FR.loading=true;FR.err='';
+ const H=home(),mine=(Array.isArray(H.friends)?H.friends:[]).slice(0,60),ids=mine.map(f=>f.id);
+ try{const res=await Promise.all(ids.map(id=>DB.doc('cities/'+id).get().then(s=>[id,s]).catch(()=>[id,null])));
+  FR.list=res.map(([id,s])=>{const f=mine.find(x=>x.id===id)||{},v=s&&s.exists?s.data():null;return{id,name:(v&&v.name)||f.name||'Pemain',city:(v&&v.city)||f.city||'Kota',lvl:v?(+v.level||1):1,pop:v?(+v.pop||0):0,data:v&&typeof v.data==='string'?v.data:'',code:(v&&v.code)||f.code||''};});
+  try{const q=await DB.collection('cities').orderBy('updatedAt','desc').limit(12).get();FR.others=q.docs.filter(d=>d.id!==MYID&&!ids.includes(d.id)).map(d=>{const v=d.data()||{};return{id:d.id,name:String(v.name||'Pemain'),city:String(v.city||'Kota'),lvl:+v.level||1,pop:+v.pop||0,data:typeof v.data==='string'?v.data:'',code:String(v.code||'')};}).slice(0,8);}catch(e){FR.others=[];}
+  FR.loaded=true;}
+ catch(e){FR.err=fbMsg(e);}FR.loading=false;renderAny();}
+function onlineBox(){if(!isFB()&&FBstate!=='loading'&&FBstate!=='error'&&FBstate!=='file')return'';
+ const st=FBstate==='online'?'<span class="olb on">● Online</span>':'<span class="olb">● Offline</span>';
+ let h=`<div class="olbox"><div class="row" style="justify-content:space-between;align-items:center;gap:8px"><b>Akun online</b>${st}</div>`;
+ if(FBstate==='file')h+=`<p class="note">Fitur online hanya jalan saat game dibuka dari situs (misalnya Netlify), bukan dari file langsung.</p>`;
+ else if(FBstate==='loading')h+=`<p class="note">Menyambungkan ke server…</p>`;
+ else if(FBstate==='error')h+=`<p class="note">${esc(FBerr)}</p>`;
+ else if(FBstate==='online'){h+=`<p class="note" style="margin:6px 0">${esc(myName())}${FBU&&FBU.email?' · '+esc(FBU.email):''}</p><div class="row" style="gap:6px;flex-wrap:wrap;align-items:center"><span class="code">${esc(MYCODE||'membuat kode…')}</span><button class="btn sm ghost" data-fb="copy">Salin kode</button><button class="btn sm ghost" data-fb="out">Keluar</button></div>`;
+  h+=`<div class="row" style="gap:6px;margin-top:8px"><input id="frcode" maxlength="9" placeholder="Kode teman, mis. KN-7F3QX" autocomplete="off" autocapitalize="characters"><button class="btn sm" data-fb="add">Tambah teman</button></div>`+(FR.msg?`<p class="note" style="margin-top:4px">${esc(FR.msg)}</p>`:'');}
+ else h+=`<p class="note" style="margin:6px 0">Masuk dengan akun Google untuk menyimpan kota di cloud, berteman dengan kode, dan saling berkunjung sungguhan.</p><button class="btn" data-fb="in">${FBstate==='signing'?'Membuka login…':'Masuk dengan Google'}</button>`;
+ if(FBerr&&FBstate!=='error')h+=`<p class="note" style="color:#b3261e;margin-top:6px">${esc(FBerr)}</p>`;
+ return h+'</div>';}
+function frRowFB(f,stranger){if(!stranger)return frRow(f,false);const ini=esc((f.name||'?').trim().charAt(0).toUpperCase()||'?');
+ return`<div class="fr"><div class="av" style="background:#6a7a8a">${ini}</div><div class="t"><b>${esc(f.name)} · ${esc(f.city)}</b><small>Pemain lain · Level ${f.lvl}${f.pop?' · '+fmt(f.pop)+' warga':''}</small></div>${f.code?`<button class="btn sm ghost" data-fbadd="${esc(f.code)}">Tambah</button>`:''}<button class="btn sm ghost" data-v="${esc(f.id)}">Kunjungi</button></div>`;}
+function visitDay(){const d=new Date();return''+d.getFullYear()+String(d.getMonth()+1).padStart(2,'0')+String(d.getDate()).padStart(2,'0');}
+async function sendVisit(){if(!VIS||!isFB()||!DB||!MYID)return;const v=VIS;VIS=null;
+ try{await DB.doc('cities/'+v.id+'/visits/'+MYID+'_'+visitDay()).set({from:MYID,name:myName(),helps:v.helps,gift:v.gift,like:v.like,at:firebase.firestore.FieldValue.serverTimestamp()});}
+ catch(e){if(e&&e.code==='permission-denied'&&(v.helps||v.gift||v.like))toast('Kunjunganmu ke teman ini hari ini sudah tercatat. Datang lagi besok!','');}}
+function visActs(){const el=$('#visitActs');if(!el)return;if(!VIS){el.innerHTML='';el.classList.add('hide');return;}el.classList.remove('hide');
+ el.innerHTML=`<button class="btn sm" data-va="help" ${VIS.helps>=5?'disabled':''}>Bantu ${VIS.helps}/5</button><button class="btn sm ${VIS.like?'':'ghost'}" data-va="like">${VIS.like?'Disukai':'Suka'}</button><button class="btn sm ${VIS.gift?'':'ghost'}" data-va="gift" ${VIS.gift?'disabled':''}>${VIS.gift?'Hadiah terkirim':'Hadiah (1 '+BOLT+')'}</button>`;}
+function helpLog(){const H=homeData,d=visitDay();H.helpLog=H.helpLog&&H.helpLog.day===d?H.helpLog:{day:d,h:{},g:{}};return H.helpLog;}
+function visitAct(a){if(!VIS||!homeData)return;const L=helpLog(),done=L.h[VIS.id]||0;
+ if(a==='help'&&(VIS.helps>=5||done>=5)){toast('Sudah membantu 5 kali di kota ini hari ini. Datang lagi besok!','');return;}
+ if(a==='gift'&&L.g[VIS.id]){toast('Hadiah untuk teman ini sudah dikirim hari ini','');return;}
+ if(a==='help'){L.h[VIS.id]=done+1;VIS.helps++;const bs=[...objs.values()].filter(o=>DEF[o.t].inc);const o=bs[(Math.random()*bs.length)|0];const rp=15+(homeData.level||1)*5;homeData.money+=rp;homeData.xp=(homeData.xp||0)+3;
+  if(o)floatAt(center(o),model(o.t,o.v).h+.3,'Dibantu! +Rp '+fmt(rp),'#7dff9a');sfx('koin');}
+ else if(a==='like'){VIS.like=!VIS.like;sfx('klik');}
+ else if(a==='gift'&&!VIS.gift){if((homeData.energy||0)<1){toast('Energimu kurang untuk mengirim hadiah','bad');return;}homeData.energy-=1;VIS.gift=true;L.g[VIS.id]=1;sfx('misi');toast('Hadiah +2 energi akan diterima temanmu','good');}
+ visActs();}
+
 setTimeout(initOnline,50);
 
 /* ---------- Loop ---------- */
@@ -2047,7 +2079,7 @@ function frame(now){requestAnimationFrame(frame);const dt=Math.min(.1,(now-last)
  acc1+=dt;acc2+=dt;acc3+=dt;if(acc1>.25){acc1=0;hud();if(sel)renderInfo(false);if(paint)updPaint();}
  if(acc2>1){acc2=0;balanceAgents();if(!visiting){tutTick();energyTick();checkDaily();cloudTick();ensureBuilders();}if(modalKind==='mis'||modalKind==='friends')renderModal();}if(acc3>15||(saveFlag&&acc3>2)){acc3=0;saveGame();}
  R.render(scene,cam);}
-addEventListener('visibilitychange',()=>{if(document.hidden)saveGame();});addEventListener('pagehide',()=>{if(visiting&&visiting.fb&&visiting.canHelp)fbVisitEnd(visiting);});addEventListener('pagehide',saveGame);
+addEventListener('visibilitychange',()=>{if(document.hidden){saveGame();cloudSave(true);}});addEventListener('pagehide',saveGame);
 
 /* ---------- Mulai ---------- */
 resize();updCam();
@@ -2055,7 +2087,7 @@ let loaded=false;if(canStore){try{const raw=localStorage.getItem(KEY);if(raw){lo
 if(!loaded){newGame();setTimeout(()=>toast('Selamat datang, Pak/Bu Wali Kota! Ikuti panduan di kiri atas.','good'),500);}
 camT.set(24,0,24);cam.zoom=isTouch?1.15:1.35;cam.updateProjectionMatrix();setView(S.view||0);camAng=camAngT;updCam();hud();tutTick();
 requestAnimationFrame(frame);setTimeout(()=>{$('#load').style.transition='opacity .5s';$('#load').style.opacity='0';setTimeout(()=>$('#load').remove(),500);},350);
-if(window.__knHook)window.__knHook({get S(){return S;},workers,doDelete,buyVehicle,startVisit,endVisit,genCity,energyTick,checkDaily,trains,planes,ships,AU,SFX,sfx,FVS,fbS,fbLike,fbGift,startVisit,endVisit,FR,rotatePlace,rdLink,isWater,get visiting(){return visiting;},C,objs,at,addObj,startPlace,setGhost,confirmPlace,setMode,recompute,hourly,collect,openShop,openModal,commitPaint,setPaint:p=>{paint=p;},check,DEF,model});
+if(window.__knHook)window.__knHook({get S(){return S;},workers,doDelete,buyVehicle,startVisit,endVisit,genCity,energyTick,checkDaily,trains,planes,ships,AU,SFX,sfx,rotatePlace,rdLink,isWater,get visiting(){return visiting;},C,objs,at,addObj,startPlace,setGhost,confirmPlace,setMode,recompute,hourly,collect,openShop,openModal,commitPaint,setPaint:p=>{paint=p;},check,DEF,model});
 }
 </script>
 </body>
