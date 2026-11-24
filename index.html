@@ -1168,7 +1168,7 @@ const DEF={
  pohon_liar:{n:'Pohon Liar',c:'alam',s:[1,1],cost:0,lv:99,hide:1,vars:WILDN,d:'Pohon alami. Tebang untuk membuka lahan.',b:(b,v)=>wildTree(b,v)}
 };
 const ICAT=k=>DEF[k].c;
-const BT=t=>{const d=DEF[t];if(d.c==='jalan'||t==='rel'||d.buy||d.crop)return 0;if(d.bridge)return 15;const m=Math.max(d.s[0],d.s[1]);return m<=1?2:m===2?5:m===3?7:m===4?15:25;};
+const BT=t=>{const d=DEF[t];if(S.devFast)return 0;if(d.c==='jalan'||t==='rel'||d.buy||d.crop)return 0;if(d.bridge)return 15;const m=Math.max(d.s[0],d.s[1]);return m<=1?2:m===2?5:m===3?7:m===4?15:25;};
 const ECOST=t=>{const d=DEF[t];if(d.e!==undefined)return d.e;if(d.c==='jalan'||t==='rel'||d.buy)return 0;if(d.c==='dekor')return 1;const m=Math.max(d.s[0],d.s[1]);return m<=2?1:m===3?2:3;};
 const BOLT='<svg class="bolt" viewBox="0 0 24 24"><path d="M13.5 2L4.5 13.5h6.5L9.5 22l10-12.5h-6.5z"/></svg>';
 
@@ -1760,6 +1760,26 @@ $('#tabs').addEventListener('click',e=>{const b=e.target.closest('[data-c]');if(
 $('#items').addEventListener('click',e=>{const b=e.target.closest('[data-id]');if(!b)return;const id=b.dataset.id,d=DEF[id];if(d.lv>S.level){toast(`${d.n} terbuka di level ${d.lv}`,'bad');return;}
  if(d.buy){buyVehicle(id);renderShop();return;}closeShop();if(id==='jalan'||id==='jembatan')setMode('road');else if(id==='trotoar')setMode('path');else if(id==='rel')setMode('rail');else startPlace(id);});$('#shopX').onclick=closeShop;
 
+/* ---------- Mode developer (hanya dengan kode rahasia pemilik game) ---------- */
+const DEVH='98a0180f2773b50de58a3140550117b5fca79033cb9be6e268c5046f386c4f2d';
+async function devHash(c){const b=new TextEncoder().encode('kotanusantara:'+c);const h=await crypto.subtle.digest('SHA-256',b);return[...new Uint8Array(h)].map(x=>x.toString(16).padStart(2,'0')).join('');}
+function devHTML(){if(visiting)return'';if(!S.dev)return`<div class="sec">Developer</div><div class="row" style="gap:6px;justify-content:flex-start"><input id="devc" placeholder="Kode developer" autocomplete="off" autocapitalize="characters" style="flex:1;min-width:0;max-width:240px;padding:8px 10px;border:1px solid #ccd;border-radius:10px;font:inherit;text-transform:uppercase"><button class="btn sm ghost" data-dev="unlock">Buka</button></div>`;
+ return`<div class="sec">Panel Developer</div><p class="note">Mode developer aktif di kota ini.</p><div class="row" style="gap:6px;justify-content:flex-start;flex-wrap:wrap">
+ <button class="btn sm" data-dev="max">Level maks (25)</button><button class="btn sm ghost" data-dev="rp">+Rp 1.000.000</button><button class="btn sm ghost" data-dev="gold">+100 koin emas</button><button class="btn sm ghost" data-dev="en">Energi 99</button>
+ <button class="btn sm ghost" data-dev="land">Buka semua lahan</button><button class="btn sm ghost" data-dev="fast">Bangun instan: ${S.devFast?'Nyala':'Mati'}</button><button class="btn sm ghost" data-dev="story">Selesaikan Misi Utama</button><button class="btn sm ghost" data-dev="off" style="color:var(--merah)">Matikan mode developer</button></div>`;}
+async function devAct(k){
+ if(k==='unlock'){const i=$('#devc'),c=String(i?i.value:'').trim().toUpperCase();if(!c)return;let h='';try{h=await devHash(c);}catch(e){toast('Kode developer hanya bisa dipakai dari situs https','bad');return;}
+  if(h!==DEVH){toast('Kode developer salah','bad');return;}S.dev=true;sfx('naik_level');toast('Mode developer aktif','gold');}
+ else if(!S.dev)return;
+ else if(k==='max'){S.level=MAXLV;S.xp=0;sfx('naik_level');toast(`Level ${MAXLV} (maksimal). Semua bangunan terbuka.`,'gold');}
+ else if(k==='rp'){S.money+=1e6;sfx('koin');toast('+Rp 1.000.000','good');}
+ else if(k==='gold'){S.gold+=100;sfx('koin');toast('+100 koin emas','good');}
+ else if(k==='en'){S.energy=Math.max(S.energy,99);toast('Energi 99','good');}
+ else if(k==='land'){S.owned.fill(true);colorTiles();recompute();toast('Semua lahan, termasuk laut, sudah dimiliki','good');}
+ else if(k==='fast'){S.devFast=!S.devFast;toast(S.devFast?'Bangun instan menyala':'Bangun instan mati','');}
+ else if(k==='story'){const n=STORY.length-(S.story||0);S.story=STORY.length;toast(n?`${n} Misi Utama ditandai selesai (tanpa hadiah)`:'Misi Utama sudah selesai semua','');}
+ else if(k==='off'){S.dev=false;S.devFast=false;toast('Mode developer dimatikan. Masukkan kode lagi untuk membukanya.','');}
+ hud();renderModal();if(!$('#shop').classList.contains('hide'))renderShop();saveGame();cloudSave(true);cloudTick(true);}
 /* Panel */
 function storyHTML(){const i=S.story||0,s=STORY[i];const done=`<p class="note" style="margin-top:8px">Misi utama selesai: ${i}/${STORY.length}</p>`;
  if(!s)return`<div class="story"><b>Semua Misi Utama selesai!</b><p>Pak Lurah: "Terima kasih, Wali Kota. Kota kecil kita kini menjadi metropolitan yang membanggakan."</p></div>`+done;
@@ -1793,7 +1813,7 @@ function renderModal(){const mb=$('#mb');if(modalKind!=='mis'&&modalKind!=='frie
   <div class="sec">Cara bermain</div><ul class="help"><li>Geser peta dengan satu jari (atau klik kanan/tengah lalu seret), cubit atau gulir roda mouse untuk zoom.</li><li>Pada mode Jalan, seret satu jari untuk menggambar jalan; geser peta dengan dua jari.</li><li>Bangunan harus menempel ke jalan atau trotoar agar berfungsi (kecuali sawah).</li><li>Ketuk koin hijau di atas usaha untuk mengambil pendapatan. Pajak dan biaya operasional dihitung tiap 15 detik.</li><li>Membangun memakai energi dan butuh waktu: 1×1 2 detik, 2×2 5 detik, 3×3 7 detik, 4×4 15 detik, 5×5 ke atas 25 detik.</li><li>Pilih Siang atau Malam lewat tombol di kanan atas.</li><li>Musik dan efek suara bisa dinyalakan atau dimatikan di menu ini. Ganti suaranya dengan menaruh file .mp3 di folder assets/audio (misalnya koin.mp3 atau bgm_siang.mp3).</li><li>Tombol panah di kiri bawah memutar sudut kamera: lihat kota dari bawah, kanan, atas, atau kiri. Tombol tengah memutar 90°.</li><li>Pintasan: Q/E putar kamera, R putar bangunan, Esc batal, Delete bongkar.</li></ul>
   <div class="sec">Simpanan</div><p class="note">${DB&&MYID?'Kota disimpan otomatis di browser ini dan di akunmu, jadi bisa dilanjutkan di perangkat lain yang masuk dengan akun yang sama.':'Permainan disimpan otomatis di browser ini. Untuk memindahkan ke perangkat lain, salin kode simpanan lalu tempel di perangkat tujuan.'}</p>
   <textarea id="exp" readonly></textarea><div class="row" style="justify-content:flex-start;margin:6px 0 10px"><button class="btn ghost sm" data-u="copy">Salin kode</button></div>
-  <textarea id="imp" placeholder="Tempel kode simpanan di sini"></textarea><div class="row" style="justify-content:flex-start;margin-top:6px"><button class="btn ghost sm" data-u="imp">Muat dari kode</button><button class="btn ghost sm" data-u="new" style="color:var(--merah)">Mulai kota baru</button></div>`;
+  <textarea id="imp" placeholder="Tempel kode simpanan di sini"></textarea><div class="row" style="justify-content:flex-start;margin-top:6px"><button class="btn ghost sm" data-u="imp">Muat dari kode</button><button class="btn ghost sm" data-u="new" style="color:var(--merah)">Mulai kota baru</button></div>`+devHTML();
   $('#exp').value=exportCode();}}
 $('#mb').addEventListener('click',e=>{const t=e.target.closest('button');if(!t)return;
  if(t.dataset.t){misTab=t.dataset.t;renderModal();return;}
@@ -1801,6 +1821,7 @@ $('#mb').addEventListener('click',e=>{const t=e.target.closest('button');if(!t)r
  if(t.dataset.m!==undefined){const m=S.daily.m[+t.dataset.m];if(m&&!m.claimed&&mProg(m)>=m.n){m.claimed=true;S.money+=m.rp;S.gold+=m.gold;gainXP(m.xp);sfx('misi');toast(`Misi selesai! +Rp ${fmt(m.rp)}, +${m.gold} koin emas`,'good');renderModal();saveSoon();}return;}
  if(t.dataset.a){const a=ACH.find(x=>x[0]===t.dataset.a);if(a&&!S.ach[a[0]]&&a[3]()>=a[4]){S.ach[a[0]]=1;S.gold+=a[5];gainXP(20);sfx('misi');toast(`Pencapaian "${a[1]}": +${a[5]} koin emas`,'gold');renderModal();saveSoon();}return;}
  if(t.dataset.b){const n=+t.dataset.b;if(S.gold<n){toast('Koin emas tidak cukup','bad');return;}S.gold-=n;S.money+=n*400;toast(`+Rp ${fmt(n*400)} masuk kas`,'good');return;}
+ if(t.dataset.dev){devAct(t.dataset.dev);return;}
  const u=t.dataset.u;if(u==='save'){saveGame();cloudSave(true);cloudTick(true);toast(isFB()&&FBU?'Tersimpan di perangkat dan akun Google':'Tersimpan','good');}
  else if(u==='fs'){const d=document.documentElement;const p=d.requestFullscreen?d.requestFullscreen():null;if(p&&p.then)p.then(()=>{try{const q=screen.orientation&&screen.orientation.lock&&screen.orientation.lock('landscape');if(q&&q.catch)q.catch(()=>{});}catch(e){}}).catch(()=>toast('Layar penuh tidak didukung di sini','bad'));else toast('Layar penuh tidak didukung di sini','bad');}
  else if(u==='sh'){S.shadows=!S.shadows;applyShadows();renderModal();}
